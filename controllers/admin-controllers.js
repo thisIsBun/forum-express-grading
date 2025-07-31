@@ -9,6 +9,24 @@ const adminController = {
       .catch(error => {
         return next(error)
       })
+  },
+  createRestaurant: (req, res) => {
+    res.render('admin/create-restaurant')
+  },
+  editRestaurant: (req, res, next) => {
+    const { name, tel, address, openingHours, description } = req.body
+    if (!name) {
+      throw new Error('Restaurant name is required!')
+    }
+
+    Restaurant.create({ name, tel, address, openingHours, description })
+      .then(() => {
+        req.flash('success_msg', 'Create restaurant success')
+        res.redirect('/admin/restaurants')
+      })
+      .catch(error => {
+        return next(error)
+      })
   }
 }
 
