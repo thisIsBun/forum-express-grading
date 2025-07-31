@@ -10,10 +10,22 @@ const adminController = {
         return next(error)
       })
   },
-  createRestaurant: (req, res) => {
+  getRestaurant: (req, res, next) => {
+    Restaurant.findByPk(req.params.id, { raw: true })
+      .then(restaurant => {
+        if (!restaurant) {
+          throw new Error('Restaurant not exist')
+        }
+        return res.render('admin/restaurant', { restaurant })
+      })
+      .catch(error => {
+        return next(error)
+      })
+  },
+  getCreateRestaurant: (req, res) => {
     res.render('admin/create-restaurant')
   },
-  editRestaurant: (req, res, next) => {
+  createRestaurant: (req, res, next) => {
     const { name, tel, address, openingHours, description } = req.body
     if (!name) {
       throw new Error('Restaurant name is required!')
