@@ -22,10 +22,10 @@ const adminController = {
         return next(error)
       })
   },
-  getCreateRestaurant: (req, res) => {
+  createRestaurant: (req, res) => {
     res.render('admin/create-restaurant')
   },
-  createRestaurant: (req, res, next) => {
+  postRestaurant: (req, res, next) => {
     const { name, tel, address, openingHours, description } = req.body
     if (!name) {
       throw new Error('Restaurant name is required!')
@@ -34,6 +34,36 @@ const adminController = {
     Restaurant.create({ name, tel, address, openingHours, description })
       .then(() => {
         req.flash('success_msg', 'Create restaurant success')
+        res.redirect('/admin/restaurants')
+      })
+      .catch(error => {
+        return next(error)
+      })
+  },
+  editRestaurant: (req, res, next) => {
+    Restaurant.findByPk(req.params.id, { raw: true })
+      .then(restaurant => {
+        if (!restaurant) {
+          throw new Error('Restaurant not exist')
+        }
+        console.log(1, restaurant)
+        return res.render('admin/edit-restaurant', { restaurant })
+      })
+      .catch(error => {
+        return next(error)
+      })
+  },
+  putRestaurant: (req, res, next) => {
+    const { name, tel, address, openingHours, description } = req.body
+    if (!name) {
+      throw new Error('Restaurant name is required!')
+    }
+    Restaurant.findByPk(req.params.id)
+      .then(restaurant => {
+        return restaurant.update({ name, tel, address, openingHours, description })
+      })
+      .then(() => {
+        req.flash('success_msg', 'Update restaurant success')
         res.redirect('/admin/restaurants')
       })
       .catch(error => {
