@@ -46,7 +46,6 @@ const adminController = {
         if (!restaurant) {
           throw new Error('Restaurant not exist')
         }
-        console.log(1, restaurant)
         return res.render('admin/edit-restaurant', { restaurant })
       })
       .catch(error => {
@@ -60,10 +59,29 @@ const adminController = {
     }
     Restaurant.findByPk(req.params.id)
       .then(restaurant => {
+        if (!restaurant) {
+          throw new Error('Restaurant not exist')
+        }
         return restaurant.update({ name, tel, address, openingHours, description })
       })
       .then(() => {
         req.flash('success_msg', 'Update restaurant success')
+        res.redirect('/admin/restaurants')
+      })
+      .catch(error => {
+        return next(error)
+      })
+  },
+  deleteRestaurant: (req, res, next) => {
+    Restaurant.findByPk(req.params.id)
+      .then(restaurant => {
+        if (!restaurant) {
+          throw new Error('Restaurant not exist')
+        }
+        return restaurant.destroy()
+      })
+      .then(() => {
+        req.flash('success_msg', 'Delete restaurant success')
         res.redirect('/admin/restaurants')
       })
       .catch(error => {
